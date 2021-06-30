@@ -2,6 +2,7 @@ use std::{io::stdin};
 
 fn main() {
     println!("Tic Tac Toe Game");
+
     let player1 = ask_player_char();
     let player2 = ask_player_char();
 
@@ -17,6 +18,7 @@ fn main() {
         let symbol = select_player(&mut turn, player1, player2);
         insert_symbol(&mut empty_slot, symbol, &mut table[..], &mut turn);
         if check_win(symbol, empty_slot, &mut table[..]) {
+            show_board(&table[..]);
             break println!("{} won!", symbol);
         }
     }
@@ -46,7 +48,8 @@ fn ask_player_char() -> char {
     let mut c = String::new();
     stdin().read_line(&mut c).expect("Error while getting input.");
 
-    c.chars().next().unwrap()
+    let symbol: char = c.chars().next().unwrap();
+    symbol
 }
 
 fn select_player(turn: &mut i32, player1: char, player2: char) ->  char {
