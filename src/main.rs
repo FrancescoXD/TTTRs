@@ -39,7 +39,9 @@ fn insert_symbol(empty_slot: &mut u8, symbol: char, table: &mut [char], turn: &m
     if is_valid_position(pos, &table[..]) {
         table[pos] = symbol;
         *turn += 1;
-        *empty_slot -= 1;
+        if *empty_slot > 1 {
+            *empty_slot -= 1;
+        }
     }
 }
 
@@ -79,7 +81,7 @@ fn is_valid_position(pos: usize, table: &[char]) -> bool {
 }
 
 fn check_win(symbol: char, empty_slot: u8, table: &mut [char]) -> bool {
-    if (empty_slot == 0) ||
+    (empty_slot == 0) ||
     (table[0] == symbol && table[1] == symbol && table[2] == symbol) ||
     (table[3] == symbol && table[4] == symbol && table[5] == symbol) ||
     (table[6] == symbol && table[7] == symbol && table[8] == symbol) ||
@@ -87,9 +89,5 @@ fn check_win(symbol: char, empty_slot: u8, table: &mut [char]) -> bool {
     (table[1] == symbol && table[4] == symbol && table[7] == symbol) ||
     (table[2] == symbol && table[5] == symbol && table[8] == symbol) ||
     (table[0] == symbol && table[4] == symbol && table[8] == symbol) ||
-    (table[2] == symbol && table[4] == symbol && table[6] == symbol) {
-        return true;
-    }
-
-    false
+    (table[2] == symbol && table[4] == symbol && table[6] == symbol)
 }
