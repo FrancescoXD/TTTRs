@@ -14,9 +14,12 @@ fn main() {
         show_board(&table[..]);
         let symbol = select_player(&mut turn, player1, player2);
         insert_symbol(&mut empty_slot, symbol, &mut table[..], &mut turn);
-        
+
         if check_win(symbol, empty_slot, &mut table[..]) {
             show_board(&table[..]);
+            if empty_slot == 0 {
+                break println!("Nobody is the winner!");
+            }
             break println!("{} won!", symbol);
         }
     }
@@ -76,23 +79,15 @@ fn is_valid_position(pos: usize, table: &[char]) -> bool {
 }
 
 fn check_win(symbol: char, empty_slot: u8, table: &mut [char]) -> bool {
-    if empty_slot == 0 {
-        return false;
-    } else if table[0] == symbol && table[1] == symbol && table[2] == symbol {
-        return true;
-    } else if table[3] == symbol && table[4] == symbol && table[5] == symbol {
-        return true;
-    } else if table[6] == symbol && table[7] == symbol && table[8] == symbol {
-        return true;
-    } else if table[0] == symbol && table[3] == symbol && table[6] == symbol {
-        return true;
-    } else if table[1] == symbol && table[4] == symbol && table[7] == symbol {
-        return true;
-    } else if table[2] == symbol && table[5] == symbol && table[8] == symbol {
-        return true;
-    } else if table[0] == symbol && table[4] == symbol && table[8] == symbol {
-        return true;
-    } else if table[2] == symbol && table[4] == symbol && table[6] == symbol {
+    if (empty_slot == 0) ||
+    (table[0] == symbol && table[1] == symbol && table[2] == symbol) ||
+    (table[3] == symbol && table[4] == symbol && table[5] == symbol) ||
+    (table[6] == symbol && table[7] == symbol && table[8] == symbol) ||
+    (table[0] == symbol && table[3] == symbol && table[6] == symbol) ||
+    (table[1] == symbol && table[4] == symbol && table[7] == symbol) ||
+    (table[2] == symbol && table[5] == symbol && table[8] == symbol) ||
+    (table[0] == symbol && table[4] == symbol && table[8] == symbol) ||
+    (table[2] == symbol && table[4] == symbol && table[6] == symbol) {
         return true;
     }
 
