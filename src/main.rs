@@ -6,8 +6,8 @@ fn main() {
     let player1 = ask_player_char();
     let player2 = ask_player_char();
 
-    let mut turn= 0;
-    let mut table= [' '; 9];
+    let mut turn = 0;
+    let mut table = [' '; 9];
     let mut empty_slot: u8 = 9;
     
     loop {
