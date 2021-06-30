@@ -15,12 +15,12 @@ fn main() {
         let symbol = select_player(&mut turn, player1, player2);
         insert_symbol(&mut empty_slot, symbol, &mut table[..], &mut turn);
 
-        if check_win(symbol, empty_slot, &mut table[..]) {
+        if check_win(symbol, &mut table[..]) {
             show_board(&table[..]);
-            if empty_slot == 0 {
-                break println!("Nobody is the winner!");
-            }
             break println!("{} won!", symbol);
+        } else if empty_slot == 0 {
+            show_board(&table[..]);
+            break println!("Nobody is the winner!");
         }
     }
 }
@@ -39,9 +39,7 @@ fn insert_symbol(empty_slot: &mut u8, symbol: char, table: &mut [char], turn: &m
     if is_valid_position(pos, &table[..]) {
         table[pos] = symbol;
         *turn += 1;
-        if *empty_slot > 1 {
-            *empty_slot -= 1;
-        }
+        *empty_slot -= 1;
     }
 }
 
@@ -80,8 +78,7 @@ fn is_valid_position(pos: usize, table: &[char]) -> bool {
     false
 }
 
-fn check_win(symbol: char, empty_slot: u8, table: &mut [char]) -> bool {
-    (empty_slot == 0) ||
+fn check_win(symbol: char, table: &mut [char]) -> bool {
     (table[0] == symbol && table[1] == symbol && table[2] == symbol) ||
     (table[3] == symbol && table[4] == symbol && table[5] == symbol) ||
     (table[6] == symbol && table[7] == symbol && table[8] == symbol) ||
