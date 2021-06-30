@@ -7,16 +7,14 @@ fn main() {
     let player2 = ask_player_char();
 
     let mut turn= 0;
-
     let mut table= [' '; 9];
-    show_board(&table);
-
     let mut empty_slot: u8 = 9;
     
     loop {
         show_board(&table[..]);
         let symbol = select_player(&mut turn, player1, player2);
         insert_symbol(&mut empty_slot, symbol, &mut table[..], &mut turn);
+        
         if check_win(symbol, empty_slot, &mut table[..]) {
             show_board(&table[..]);
             break println!("{} won!", symbol);
