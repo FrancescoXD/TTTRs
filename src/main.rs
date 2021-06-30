@@ -28,7 +28,7 @@ fn main() {
 fn insert_symbol(empty_slot: &mut u8, symbol: char, table: &mut [char], turn: &mut i32) {
     let mut pos = String::new();
 
-    println!("Insert the position:");
+    println!("Insert the position ({}):", symbol);
     stdin().read_line(&mut pos).expect("Error while getting input.");
     let mut pos: usize = pos.trim().parse().expect("Error while parsing the number.");
 
