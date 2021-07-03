@@ -15,7 +15,7 @@ fn main() {
         let symbol = select_player(&mut turn, player1, player2);
         insert_symbol(&mut empty_slot, symbol, &mut table[..], &mut turn);
 
-        if check_win(symbol, &mut table[..]) {
+        if check_win(symbol, &table[..]) {
             show_board(&table[..]);
             break println!("{} won!", symbol);
         } else if empty_slot == 0 {
@@ -62,23 +62,20 @@ fn select_player(turn: &mut i32, player1: char, player2: char) ->  char {
 }
 
 fn show_board(table: &[char]) {
-    for (i, &item) in table.iter().enumerate() {
-        print!("{} ", item);
-        if i == 2 || i == 5 || i == 8 {
-            println!();
-        }
+    for row in table.chunks(3) {
+        println!("{}", row.iter().fold(String::with_capacity(6), |mut s, c| {
+            s.push(*c);
+            s.push(' ');
+            s
+        }));
     }
 }
 
 fn is_valid_position(pos: usize, table: &[char]) -> bool {
-    if table[pos] == ' ' {
-        return true;
-    }
-
-    false
+    table.get(pos) == Some(&' ')
 }
 
-fn check_win(symbol: char, table: &mut [char]) -> bool {
+fn check_win(symbol: char, table: &[char]) -> bool {
     (table[0] == symbol && table[1] == symbol && table[2] == symbol) ||
     (table[3] == symbol && table[4] == symbol && table[5] == symbol) ||
     (table[6] == symbol && table[7] == symbol && table[8] == symbol) ||
