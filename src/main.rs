@@ -1,87 +1,105 @@
-use std::{io::stdin};
+use std::io::stdin;
+
+#[derive(Copy, Clone, PartialEq, Debug)]
+enum CellState {
+    Player1, Player2, None
+}
+
+struct GameField {
+    game_field: [CellState; 3*3],
+    player: bool,
+    slot: u8,
+}
+
+impl GameField {
+    fn show_field(&self, player1: &char, player2: &char) {
+        for row in self.game_field.chunks(3) {
+            row.iter().for_each(|c| match c {
+                CellState::None => {
+                    print!(" ");
+                },
+                CellState::Player1 => {
+                    print!("{} ", player1);
+                },
+                CellState::Player2 => {
+                    print!("{} ", player2);
+                }
+            });
+            println!();
+        }
+    }
+
+    fn insert(&mut self, pos: usize) {
+        match self.game_field[pos] {
+            CellState::None => {
+                self.game_field[pos] = self.get_player();
+                self.slot -= 1;
+                if !self.check_win() { self.player = !self.player; }
+            },
+            CellState::Player1 => {},
+            CellState::Player2 => {}
+        }
+    }
+
+    fn get_player(&self) -> CellState {
+        if self.player {
+            return CellState::Player1;
+        }
+
+        CellState::Player2
+    }
+
+    fn check_win(&self) -> bool {
+        (self.game_field[0] == self.get_player() && self.game_field[1] == self.get_player() && self.game_field[2] == self.get_player()) ||
+        (self.game_field[3] == self.get_player() && self.game_field[4] == self.get_player() && self.game_field[5] == self.get_player()) ||
+        (self.game_field[6] == self.get_player() && self.game_field[7] == self.get_player() && self.game_field[8] == self.get_player()) ||
+        (self.game_field[0] == self.get_player() && self.game_field[3] == self.get_player() && self.game_field[6] == self.get_player()) ||
+        (self.game_field[1] == self.get_player() && self.game_field[4] == self.get_player() && self.game_field[7] == self.get_player()) ||
+        (self.game_field[2] == self.get_player() && self.game_field[5] == self.get_player() && self.game_field[8] == self.get_player()) ||
+        (self.game_field[0] == self.get_player() && self.game_field[4] == self.get_player() && self.game_field[8] == self.get_player()) ||
+        (self.game_field[2] == self.get_player() && self.game_field[4] == self.get_player() && self.game_field[6] == self.get_player())
+    }
+}
 
 fn main() {
     println!("Tic Tac Toe Game");
 
-    let player1 = ask_player_char();
-    let player2 = ask_player_char();
+    let player1 = ask_player_symbol();
+    let player2 = ask_player_symbol();
 
-    let mut turn = 0;
-    let mut table = [' '; 9];
-    let mut empty_slot: u8 = 9;
-    
+    let mut game_field = GameField {
+        game_field: [CellState::None; 3*3],
+        player: true,
+        slot: 9,
+    };
+
     loop {
-        show_board(&table[..]);
-        let symbol = select_player(&mut turn, player1, player2);
-        insert_symbol(&mut empty_slot, symbol, &mut table[..], &mut turn);
-
-        if check_win(symbol, &table[..]) {
-            show_board(&table[..]);
-            break println!("{} won!", symbol);
-        } else if empty_slot == 0 {
-            show_board(&table[..]);
-            break println!("Nobody is the winner!");
+        game_field.show_field(&player1, &player2);
+        insert_position(&mut game_field);
+        if game_field.check_win() {
+            game_field.show_field(&player1, &player2);
+            break println!("{:?} won!", game_field.get_player());
+        } else if game_field.slot == 0 {
+            break println!("The winner is... no, there isn't a winner.");
         }
     }
 }
 
-fn insert_symbol(empty_slot: &mut u8, symbol: char, table: &mut [char], turn: &mut i32) {
-    let mut pos = String::new();
+fn insert_position(game_field: &mut GameField) {
+    let mut s = String::new();
+    println!("Insert the position (0..9):");
 
-    println!("Insert the position ({}):", symbol);
-    stdin().read_line(&mut pos).expect("Error while getting input.");
-    let mut pos: usize = pos.trim().parse().expect("Error while parsing the number.");
+    stdin().read_line(&mut s).expect("Error!");
+    let pos: usize = s.trim().parse().unwrap();
 
-    if pos != 0 {
-        pos -= 1;
-    }
-
-    if is_valid_position(pos, &table[..]) {
-        table[pos] = symbol;
-        *turn += 1;
-        *empty_slot -= 1;
-    }
+    game_field.insert(pos - 1);
 }
 
-fn ask_player_char() -> char {
+fn ask_player_symbol() -> char {
     println!("Insert player symbol: ");
 
     let mut c = String::new();
     stdin().read_line(&mut c).expect("Error while getting input.");
 
-    let symbol: char = c.chars().next().unwrap();
-    symbol
-}
-
-fn select_player(turn: &mut i32, player1: char, player2: char) ->  char {
-    if *turn % 2 == 0 {
-        return player1;
-    }
-
-    player2
-}
-
-fn show_board(table: &[char]) {
-    for row in table.chunks(3) {
-        println!("{}", row.iter().fold(String::with_capacity(6), |mut s, c| {
-            s.push(*c);
-            s.push(' ');
-            s
-        }));
-    }
-}
-
-fn is_valid_position(pos: usize, table: &[char]) -> bool {
-    table.get(pos) == Some(&' ')
-}
-
-fn check_win(symbol: char, table: &[char]) -> bool {
-    (table[0] == symbol && table[1] == symbol && table[2] == symbol) ||
-    (table[3] == symbol && table[4] == symbol && table[5] == symbol) ||
-    (table[6] == symbol && table[7] == symbol && table[8] == symbol) ||
-    (table[0] == symbol && table[3] == symbol && table[6] == symbol) ||
-    (table[1] == symbol && table[4] == symbol && table[7] == symbol) ||
-    (table[2] == symbol && table[5] == symbol && table[8] == symbol) ||
-    (table[0] == symbol && table[4] == symbol && table[8] == symbol) ||
-    (table[2] == symbol && table[4] == symbol && table[6] == symbol)
+    c.chars().next().unwrap()
 }
