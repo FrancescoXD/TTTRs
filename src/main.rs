@@ -14,30 +14,28 @@ struct GameField {
 impl GameField {
     fn show_field(&self, player1: &char, player2: &char) {
         for row in self.game_field.chunks(3) {
-            row.iter().for_each(|c| match c {
-                CellState::None => {
-                    print!(" ");
-                },
-                CellState::Player1 => {
-                    print!("{} ", player1);
-                },
-                CellState::Player2 => {
-                    print!("{} ", player2);
+            for c in row {
+                match c {
+                    CellState::None => {
+                        print!(" ");
+                    },
+                    CellState::Player1 => {
+                        print!("{} ", player1);
+                    },
+                    CellState::Player2 => {
+                        print!("{} ", player2);
+                    }
                 }
-            });
+            }
             println!();
         }
     }
 
     fn insert(&mut self, pos: usize) {
-        match self.game_field[pos] {
-            CellState::None => {
-                self.game_field[pos] = self.get_player();
-                self.slot -= 1;
-                if !self.check_win() { self.player = !self.player; }
-            },
-            CellState::Player1 => {},
-            CellState::Player2 => {}
+        if self.game_field[pos] == CellState::None {
+            self.game_field[pos] = self.get_player();
+            self.slot -= 1;
+            if !self.check_win() { self.player = !self.player; }
         }
     }
 
@@ -50,14 +48,15 @@ impl GameField {
     }
 
     fn check_win(&self) -> bool {
-        (self.game_field[0] == self.get_player() && self.game_field[1] == self.get_player() && self.game_field[2] == self.get_player()) ||
-        (self.game_field[3] == self.get_player() && self.game_field[4] == self.get_player() && self.game_field[5] == self.get_player()) ||
-        (self.game_field[6] == self.get_player() && self.game_field[7] == self.get_player() && self.game_field[8] == self.get_player()) ||
-        (self.game_field[0] == self.get_player() && self.game_field[3] == self.get_player() && self.game_field[6] == self.get_player()) ||
-        (self.game_field[1] == self.get_player() && self.game_field[4] == self.get_player() && self.game_field[7] == self.get_player()) ||
-        (self.game_field[2] == self.get_player() && self.game_field[5] == self.get_player() && self.game_field[8] == self.get_player()) ||
-        (self.game_field[0] == self.get_player() && self.game_field[4] == self.get_player() && self.game_field[8] == self.get_player()) ||
-        (self.game_field[2] == self.get_player() && self.game_field[4] == self.get_player() && self.game_field[6] == self.get_player())
+        let get_player = self.get_player();
+        (self.game_field[0] == get_player && self.game_field[1] == get_player && self.game_field[2] == get_player) ||
+        (self.game_field[3] == get_player && self.game_field[4] == get_player && self.game_field[5] == get_player) ||
+        (self.game_field[6] == get_player && self.game_field[7] == get_player && self.game_field[8] == get_player) ||
+        (self.game_field[0] == get_player && self.game_field[3] == get_player && self.game_field[6] == get_player) ||
+        (self.game_field[1] == get_player && self.game_field[4] == get_player && self.game_field[7] == get_player) ||
+        (self.game_field[2] == get_player && self.game_field[5] == get_player && self.game_field[8] == get_player) ||
+        (self.game_field[0] == get_player && self.game_field[4] == get_player && self.game_field[8] == get_player) ||
+        (self.game_field[2] == get_player && self.game_field[4] == get_player && self.game_field[6] == get_player)
     }
 }
 
@@ -89,7 +88,7 @@ fn insert_position(game_field: &mut GameField) {
     let mut s = String::new();
     println!("Insert the position (0..9):");
 
-    stdin().read_line(&mut s).expect("Error!");
+    stdin().read_line(&mut s).unwrap();
     let pos: usize = s.trim().parse().unwrap();
 
     game_field.insert(pos - 1);
