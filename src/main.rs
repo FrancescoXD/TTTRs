@@ -32,7 +32,7 @@ impl GameField {
     }
 
     fn insert(&mut self, pos: usize) {
-        if self.game_field[pos] == CellState::None {
+        if let CellState::None = self.game_field[pos] {
             self.game_field[pos] = self.get_player();
             self.slot -= 1;
             if !self.check_win() { self.player = !self.player; }
