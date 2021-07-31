@@ -32,10 +32,13 @@ impl GameField {
     }
 
     fn insert(&mut self, pos: usize) {
-        if let CellState::None = self.game_field[pos] {
-            self.game_field[pos] = self.get_player();
-            self.slot -= 1;
-            if !self.check_win() { self.player = !self.player; }
+        let get_player = self.get_player();
+        if let Some(c) = self.game_field.get_mut(pos) {
+            if *c == CellState::None {
+                *c = get_player;
+                self.slot -= 1;
+                if !self.check_win() { self.player = !self.player; }
+            }
         }
     }
 
@@ -88,10 +91,19 @@ fn insert_position(game_field: &mut GameField) {
     let mut s = String::new();
     println!("Insert the position (0..9):");
 
-    stdin().read_line(&mut s).unwrap();
-    let pos: usize = s.trim().parse().unwrap();
+    stdin().read_line(&mut s).expect("Error while reading input.");
+    let pos: usize;
+    if let Ok(p) = s.trim().parse() {
+        pos = p;
+    } else {
+        return;
+    }
 
-    game_field.insert(pos - 1);
+    if pos > 0 {
+        game_field.insert(pos - 1);
+    } else {
+        println!("Wrong position!");
+    }
 }
 
 fn ask_player_symbol() -> char {
