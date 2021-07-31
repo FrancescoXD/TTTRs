@@ -88,21 +88,16 @@ fn main() {
 }
 
 fn insert_position(game_field: &mut GameField) {
-    let mut s = String::new();
+    let mut pos = String::new();
     println!("Insert the position (0..9):");
 
-    stdin().read_line(&mut s).expect("Error while reading input.");
-    let pos: usize;
-    if let Ok(p) = s.trim().parse() {
-        pos = p;
-    } else {
-        return;
-    }
-
-    if pos > 0 {
-        game_field.insert(pos - 1);
-    } else {
-        println!("Wrong position!");
+    stdin().read_line(&mut pos).expect("Error while reading input.");
+    if let Ok(pos) = pos.trim().parse::<usize>() {
+        if pos > 0 {
+            game_field.insert(pos - 1);
+        } else {
+            println!("Wrong position!");
+        }
     }
 }
 
